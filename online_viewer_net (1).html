@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diego's Space</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #000000;
+            --primary-color: #ff00ff;
+            --secondary-color: #00ff00;
+            --accent-color: #00ffff;
+            --text-color: #ffffff;
+            --glass-bg: rgba(20, 20, 20, 0.8);
+            --border-color: #ff00ff;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', cursive;
+            background: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Custom Background Image */
+        .custom-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
+        }
+
+        /* Falling objects animation */
+        .falling-objects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .falling-item {
+            position: absolute;
+            font-size: 30px;
+            animation: fall linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Cursor Trail */
+        .cursor-trail {
+            position: fixed;
+            pointer-events: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-color), transparent);
+            z-index: 9999;
+            animation: trailFade 1s forwards;
+        }
+
+        @keyframes trailFade {
+            to {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        /* Entry Page */
+        .entry-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #000, #1a001a, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s, visibility 1s;
+        }
+
+        .entry-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .entry-content {
+            text-align: center;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+            96% { transform: translate(-2px, -2px); }
+        }
+
+        .entry-logo {
+            font-size: clamp(3em, 10vw, 8em);
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 50px #ff00ff;
+            margin-bottom: 20px;
+            animation: colorShift 3s infinite, textGlow 1.5s infinite;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 5px;
+        }
+
+        @keyframes colorShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(360deg); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+            50% { text-shadow: 0 0 40px #00ffff, 0 0 80px #00ffff; }
+        }
+
+        .entry-subtitle {
+            font-size: clamp(1em, 3vw, 2em);
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.3; }
+        }
+
+        .enter-btn {
+            padding: 20px 50px;
+            font-size: clamp(1em, 2.5vw, 1.5em);
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: 3px solid #fff;
+            border-radius: 0;
+            color: #000;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px #ff00ff;
+            transition: all 0.3s;
+            font-family: 'Impact', sans-serif;
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.1) rotate(-2deg);
+            box-shadow: 0 0 50px #00ffff;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(-2deg); }
+            25% { transform: rotate(2deg); }
+            75% { transform: rotate(-2deg); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Top Bar (MySpace style) */
+        .top-bar {
+            background: linear-gradient(180deg, var(--primary-color), #660066);
+            padding: 15px;
+            text-align: center;
+            border: 3px solid var(--accent-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px var(--primary-color);
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .top-bar h1 {
+            font-size: clamp(2em, 5vw, 4em);
+            color: #000;
+            text-shadow: 2px 2px #fff, -2px -2px #00ffff;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 3px;
+        }
+
+        .top-bar p {
+            font-size: clamp(1em, 2vw, 1.3em);
+            color: #fff;
+            margin-top: 5px;
+            text-shadow: 1px 1px #000;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: var(--glass-bg);
+            border: 3px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px var(--primary-color);
+            animation: slideRight 0.8s ease;
+        }
+
+        @keyframes slideRight {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--accent-color);
+            object-fit: cover;
+            box-shadow: 0 0 30px var(--accent-color);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Music Player */
+        .music-player {
+            background: var(--glass-bg);
+            border: 3px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px var(--secondary-color);
+        }
+
+        .music-player h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            text-shadow: 2px 2px #000;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .music-controls button {
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            border: 2px solid #fff;
+            color: #000;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .music-controls button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+
+        /* Blog Posts */
+        .blog-post {
+            background: var(--glass-bg);
+            border: 3px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px var(--border-color);
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .blog-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 50px var(--border-color);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .blog-post h2 {
+            font-size: clamp(1.5em, 3vw, 2.5em);
+            color: var(--primary-color);
+            text-shadow: 2px 2px var(--accent-color);
+            font-family: 'Impact', sans-serif;
+        }
+
+        .post-date {
+            color: var(--accent-color);
+            font-size: 0.9em;
+        }
+
+        .blog-post p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .post-gif {
+            width: 100%;
+            max-width: 400px;
+            margin: 15px 0;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .post-actions button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            border: 2px solid #fff;
+            color: #000;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .post-actions button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        .delete-btn {
+            background: #ff0000 !important;
+        }
+
+        .expand-btn {
+            background: var(--secondary-color) !important;
+        }
+
+        /* Comment Section */
+        .comments-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--accent-color);
+            display: none;
+        }
+
+        .comments-section.active {
+            display: block;
+        }
+
+        .comment {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-color);
+            color: #fff;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        /* Floating Buttons */
+        .floating-btns {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: #000;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 0 30px var(--primary-color);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.2) rotate(15deg);
+            box-shadow: 0 0 50px var(--accent-color);
+        }
+
+        /* Post Creator Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a001a, #001a1a);
+            border: 5px solid var(--primary-color);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px var(--primary-color);
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            to { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 2px 2px var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--border-color);
+            color: #fff;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input[type="color"] {
+            height: 50px;
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 15px;
+            border: 3px solid #fff;
+            font-size: 1em;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-save:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--primary-color);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #fff;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Visitor Counter */
+        .visitor-counter {
+            background: var(--glass-bg);
+            border: 3px solid var(--secondary-color);
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px var(--secondary-color);
+        }
+
+        .visitor-counter h3 {
+            color: var(--secondary-color);
+            font-size: 1.3em;
+        }
+
+        .visitor-count {
+            font-size: 2em;
+            color: var(--accent-color);
+            font-weight: 900;
+            text-shadow: 2px 2px #000;
+        }
+
+        /* Marquee */
+        .marquee-container {
+            background: var(--glass-bg);
+            border: 3px solid var(--accent-color);
+            padding: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        .marquee {
+            animation: scroll 15s linear infinite;
+            white-space: nowrap;
+            font-size: 1.3em;
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        /* Sticker overlay */
+        .stickers {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .sticker {
+            position: absolute;
+            font-size: 50px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .floating-btns {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Background -->
+    <div class="custom-bg" id="customBg"></div>
+
+    <!-- Falling Objects -->
+    <div class="falling-objects" id="fallingObjects"></div>
+
+    <!-- Stickers -->
+    <div class="stickers" id="stickers"></div>
+
+    <!-- Entry Screen -->
+    <div class="entry-screen" id="entryScreen">
+        <div class="entry-content">
+            <h1 class="entry-logo">DIEGO'S SPACE</h1>
+            <p class="entry-subtitle">>>> ENTER THE ZONE <<<</p>
+            <button class="enter-btn" onclick="enterSite()">ENTER</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent" style="display: none;">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1 id="siteTitle">DIEGO'S SPACE</h1>
+            <p id="siteTagline">Welcome to my digital universe ✨</p>
+        </div>
+
+        <!-- Marquee -->
+        <div class="marquee-container">
+            <div class="marquee" id="marqueeText">🔥 WELCOME TO MY PAGE! 🔥 CHECK OUT MY LATEST POSTS! 🔥 DON'T FORGET TO LEAVE A COMMENT! 🔥</div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Diego" alt="Profile" class="profile-pic" id="profilePic">
+            <h2 style="color: var(--primary-color); margin-top: 15px;">About Me</h2>
+            <p id="aboutMe">Hey! I'm Diego and this is my digital space. Welcome to the chaos! 🚀</p>
+        </div>
+
+        <!-- Visitor Counter -->
+        <div class="visitor-counter">
+            <h3>Total Visitors:</h3>
+            <div class="visitor-count" id="visitorCount">1337</div>
+        </div>
+
+        <!-- Music Player -->
+        <div class="music-player">
+            <h3>🎵 Now Playing</h3>
+            <p id="nowPlaying">No music playing</p>
+            <input type="text" id="musicUrl" placeholder="Paste YouTube/Spotify URL" style="width: 100%; padding: 10px; margin-top: 10px; background: rgba(0,0,0,0.7); border: 2px solid var(--secondary-color); color: #fff;">
+            <div class="music-controls">
+                <button onclick="playMusic()">▶ Play</button>
+                <button onclick="stopMusic()">⏹ Stop</button>
+            </div>
+        </div>
+
+        <!-- Blog Posts Container -->
+        <div id="blogPosts">
+            <div class="blog-post">
+                <div class="post-header">
+                    <h2>Welcome to My Space! 🌟</h2>
+                    <span class="post-date">📅 Feb 11, 2026</span>
+                </div>
+                <p>Yo! Welcome to my personal corner of the internet. This is where I share my thoughts, vibes, and whatever else I'm feeling. It's giving 2000s internet energy mixed with modern style. Feel free to explore and customize everything!</p>
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTB0eTRlNGw0eTRlNGw0eTRlNGw0ZTRnbDR5ZTRnbDR5ZTRnbDR5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0HlHFRbmaZtBRhXG/giphy.gif" alt="Welcome GIF" class="post-gif">
+                <div class="post-actions">
+                    <button class="expand-btn" onclick="toggleComments(this)">💬 Comments</button>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <strong style="color: var(--accent-color);">You:</strong> This is sick! 🔥
+                    </div>
+                    <input type="text" class="comment-input" placeholder="Add a comment...">
+                    <button onclick="addComment(this)" style="padding: 10px 20px; background: var(--secondary-color); border: 2px solid #fff; color: #000; font-weight: 900; cursor: pointer;">Post Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Buttons -->
+    <div class="floating-btns" id="floatingBtns" style="display: none;">
+        <button class="floating-btn" onclick="openModal('postModal')" title="New Post">+</button>
+        <button class="floating-btn" onclick="openModal('customizeModal')" title="Customize">🎨</button>
+        <button class="floating-btn" onclick="toggleEffects()" title="Toggle Effects" id="effectsBtn">✨</button>
+    </div>
+
+    <!-- New Post Modal -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <h2>✨ CREATE NEW POST ✨</h2>
+            <div class="form-group">
+                <label>Post Title</label>
+                <input type="text" id="postTitle" placeholder="Enter a sick title...">
+            </div>
+            <div class="form-group">
+                <label>Post Content</label>
+                <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Add GIF/Image (Paste URL or upload)</label>
+                <input type="url" id="postGifUrl" placeholder="https://...">
+                <input type="file" id="postGifFile" accept="image/gif,image/jpeg,image/png" style="margin-top: 10px;">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal('postModal')">Cancel</button>
+                <button class="btn-save" onclick="createPost()">Post It!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customize Modal -->
+    <div class="modal" id="customizeModal">
+        <div class="modal-content">
+            <h2>🎨 CUSTOMIZE YOUR SPACE 🎨</h2>
+            
+            <div class="form-group">
+                <label>Site Title</label>
+                <input type="text" id="customTitle" value="DIEGO'S SPACE">
+            </div>
+            
+            <div class="form-group">
+                <label>Site Tagline</label>
+                <input type="text" id="customTagline" value="Welcome to my digital universe ✨">
+            </div>
+            
+            <div class="form-group">
+                <label>About Me</label>
+                <textarea id="customAbout">Hey! I'm Diego and this is my digital space. Welcome to the chaos! 🚀</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Marquee Text</label>
+                <input type="text" id="customMarquee" value="🔥 WELCOME TO MY PAGE! 🔥 CHECK OUT MY LATEST POSTS! 🔥 DON'T FORGET TO LEAVE A COMMENT! 🔥">
+            </div>
+            
+            <div class="form-group">
+                <label>Primary Color</label>
+                <input type="color" id="primaryColor" value="#ff00ff">
+            </div>
+            
+            <div class="form-group">
+                <label>Secondary Color</label>
+                <input type="color" id="secondaryColor" value="#00ff00">
+            </div>
+            
+            <div class="form-group">
+                <label>Accent Color</label>
+                <input type="color" id="accentColor" value="#00ffff">
+            </div>
+            
+            <div class="form-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000">
+            </div>
+            
+            <div class="form-group">
+                <label>Background Image URL (optional)</label>
+                <input type="url" id="bgImageUrl" placeholder="https://example.com/image.jpg">
+            </div>
+            
+            <div class="form-group">
+                <label>Profile Picture URL</label>
+                <input type="url" id="profilePicUrl" value="https://api.dicebear.com/7.x/avataaars/svg?seed=Diego">
+            </div>
+            
+            <div class="form-group">
+                <label>Font Style</label>
+                <select id="fontStyle">
+                    <option value="'Comic Sans MS', cursive">Comic Sans (Classic)</option>
+                    <option value="'Arial', sans-serif">Arial</option>
+                    <option value="'Courier New', monospace">Courier</option>
+                    <option value="'Georgia', serif">Georgia</option>
+                    <option value="'Impact', sans-serif">Impact</option>
+                    <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Falling Objects (emoji)</label>
+                <input type="text" id="fallingEmoji" value="⭐" maxlength="2" placeholder="⭐">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal('customizeModal')">Cancel</button>
+                <button class="btn-save" onclick="applyCustomization()">Save & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let effectsEnabled = true;
+        let cursorTrailEnabled = true;
+        let visitorCount = 1337;
+
+        // ==================== LOCALSTORAGE SAVE/LOAD ====================
+        const STORAGE_KEY = 'diegos-space-data-v1';
+
+        function saveToStorage() {
+            const data = {
+                version: 1,
+                posts: [],
+                customization: {
+                    title: document.getElementById('siteTitle').textContent,
+                    tagline: document.getElementById('siteTagline').textContent,
+                    aboutMe: document.getElementById('aboutMe').textContent,
+                    marquee: document.getElementById('marqueeText').textContent,
+                    primaryColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
+                    secondaryColor: getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim(),
+                    accentColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim(),
+                    bgColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim(),
+                    bgImage: document.getElementById('customBg').style.backgroundImage.replace(/url\(["']?/, '').replace(/["']?\)$/, '') || '',
+                    profilePic: document.getElementById('profilePic').src,
+                    fontFamily: document.body.style.fontFamily || "'Comic Sans MS', cursive",
+                    fallingEmoji: document.getElementById('fallingEmoji')?.value || '⭐'
+                }
+            };
+
+            document.querySelectorAll('#blogPosts .blog-post').forEach(post => {
+                const title = post.querySelector('h2')?.textContent || '';
+                const date = post.querySelector('.post-date')?.textContent?.replace('📅 ', '') || '';
+                const content = post.querySelector('p')?.textContent || '';
+                const img = post.querySelector('.post-gif');
+                const gifSrc = img ? img.src : '';
+
+                data.posts.push({ title, date, content, gifSrc });
+            });
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.warn('Storage save failed (maybe full):', e);
+            }
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                const cust = data.customization;
+
+                // Restore texts
+                document.getElementById('siteTitle').textContent = cust.title;
+                document.getElementById('siteTagline').textContent = cust.tagline;
+                document.getElementById('aboutMe').textContent = cust.aboutMe;
+                document.getElementById('marqueeText').textContent = cust.marquee;
+
+                // Restore colors
+                document.documentElement.style.setProperty('--primary-color', cust.primaryColor);
+                document.documentElement.style.setProperty('--secondary-color', cust.secondaryColor);
+                document.documentElement.style.setProperty('--accent-color', cust.accentColor);
+                document.documentElement.style.setProperty('--bg-color', cust.bgColor);
+                document.documentElement.style.setProperty('--border-color', cust.primaryColor);
+
+                // Background & profile
+                if (cust.bgImage) document.getElementById('customBg').style.backgroundImage = `url(${cust.bgImage})`;
+                document.getElementById('profilePic').src = cust.profilePic;
+
+                // Font
+                document.body.style.fontFamily = cust.fontFamily;
+
+                // Sync inputs
+                document.getElementById('customTitle').value = cust.title;
+                document.getElementById('customTagline').value = cust.tagline;
+                document.getElementById('customAbout').value = cust.aboutMe;
+                document.getElementById('customMarquee').value = cust.marquee;
+                document.getElementById('primaryColor').value = cust.primaryColor;
+                document.getElementById('secondaryColor').value = cust.secondaryColor;
+                document.getElementById('accentColor').value = cust.accentColor;
+                document.getElementById('bgColor').value = cust.bgColor;
+                document.getElementById('bgImageUrl').value = cust.bgImage;
+                document.getElementById('profilePicUrl').value = cust.profilePic;
+                document.getElementById('fontStyle').value = cust.fontFamily.includes('Comic Sans') ? "'Comic Sans MS', cursive" : cust.fontFamily.split(',')[0].trim();
+                if (document.getElementById('fallingEmoji')) document.getElementById('fallingEmoji').value = cust.fallingEmoji;
+
+                // Restore posts
+                document.getElementById('blogPosts').innerHTML = '';
+                data.posts.forEach(post => {
+                    const gifHtml = post.gifSrc ? `<img src="${post.gifSrc}" alt="Post media" class="post-gif">` : '';
+                    const postHtml = `
+                        <div class="blog-post" style="animation: fadeInUp 0.8s ease;">
+                            <div class="post-header">
+                                <h2>${post.title}</h2>
+                                <span class="post-date">📅 ${post.date}</span>
+                            </div>
+                            <p>${post.content}</p>
+                            ${gifHtml}
+                            <div class="post-actions">
+                                <button class="expand-btn" onclick="toggleComments(this)">💬 Comments</button>
+                                <button class="delete-btn" onclick="deletePost(this)">🗑️ Delete</button>
+                            </div>
+                            <div class="comments-section">
+                                <input type="text" class="comment-input" placeholder="Add a comment...">
+                                <button onclick="addComment(this)" style="padding: 10px 20px; background: var(--secondary-color); border: 2px solid #fff; color: #000; font-weight: 900; cursor: pointer; margin-top: 10px;">Post Comment</button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('blogPosts').insertAdjacentHTML('beforeend', postHtml);
+                });
+
+                // Refresh effects
+                createFallingObjects();
+                createStickers();
+
+            } catch (e) {
+                console.error('Load failed:', e);
+            }
+        }
+
+        // ==================== ORIGINAL FUNCTIONS (WITH SAVE HOOKS) ====================
+
+        function enterSite() {
+            document.getElementById('entryScreen').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('floatingBtns').style.display = 'flex';
+                startEffects();
+            }, 1000);
+        }
+
+        function startEffects() {
+            createFallingObjects();
+            createStickers();
+            incrementVisitors();
+        }
+
+        function toggleEffects() {
+            effectsEnabled = !effectsEnabled;
+            const btn = document.getElementById('effectsBtn');
+            btn.textContent = effectsEnabled ? '✨' : '💤';
+            
+            if (!effectsEnabled) {
+                document.getElementById('fallingObjects').innerHTML = '';
+                document.getElementById('stickers').innerHTML = '';
+            } else {
+                createFallingObjects();
+                createStickers();
+            }
+            saveToStorage();
+        }
+
+        function createFallingObjects() {
+            if (!effectsEnabled) return;
+            const container = document.getElementById('fallingObjects');
+            container.innerHTML = '';
+            const emoji = document.getElementById('fallingEmoji')?.value || '⭐';
+            
+            for (let i = 0; i < 15; i++) {
+                const item = document.createElement('div');
+                item.className = 'falling-item';
+                item.textContent = emoji;
+                item.style.left = Math.random() * 100 + '%';
+                item.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                item.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(item);
+            }
+        }
+
+        function createStickers() {
+            if (!effectsEnabled) return;
+            const container = document.getElementById('stickers');
+            container.innerHTML = '';
+            const stickers = ['💖', '🌟', '✨', '🔥', '💀'];
+            const positions = [
+                {top: '10%', left: '5%'},
+                {top: '20%', right: '5%'},
+                {bottom: '30%', left: '8%'},
+                {bottom: '15%', right: '10%'}
+            ];
+            
+            positions.forEach((pos, i) => {
+                const sticker = document.createElement('div');
+                sticker.className = 'sticker';
+                sticker.textContent = stickers[i % stickers.length];
+                Object.assign(sticker.style, pos);
+                sticker.style.animationDelay = i * 0.5 + 's';
+                container.appendChild(sticker);
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!cursorTrailEnabled || !effectsEnabled) return;
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = e.pageX + 'px';
+            trail.style.top = e.pageY + 'px';
+            document.body.appendChild(trail);
+            setTimeout(() => trail.remove(), 1000);
+        });
+
+        function incrementVisitors() {
+            setInterval(() => {
+                visitorCount++;
+                document.getElementById('visitorCount').textContent = visitorCount;
+            }, 5000);
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function createPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const gifUrl = document.getElementById('postGifUrl').value.trim();
+            const gifFile = document.getElementById('postGifFile').files[0];
+            
+            if (!title || !content) {
+                alert('Title and content required!');
+                return;
+            }
+            
+            const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            let gifHtml = '';
+            
+            if (gifFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    gifHtml = `<img src="${e.target.result}" alt="Post media" class="post-gif">`;
+                    insertPost(title, content, today, gifHtml);
+                    saveToStorage();
+                };
+                reader.readAsDataURL(gifFile);
+            } else if (gifUrl) {
+                let actualUrl = gifUrl;
+                if (gifUrl.includes('giphy.com') && !gifUrl.endsWith('.gif')) {
+                    const parts = gifUrl.split('-');
+                    const id = parts[parts.length-1].split('/')[0];
+                    actualUrl = `https://media.giphy.com/media/${id}/giphy.gif`;
+                }
+                gifHtml = `<img src="${actualUrl}" alt="Post media" class="post-gif">`;
+                insertPost(title, content, today, gifHtml);
+                saveToStorage();
+            } else {
+                insertPost(title, content, today, '');
+                saveToStorage();
+            }
+
+            // Clear form
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('postGifUrl').value = '';
+            document.getElementById('postGifFile').value = '';
+            closeModal('postModal');
+        }
+
+        function insertPost(title, content, date, gifHtml) {
+            const postHtml = `
+                <div class="blog-post" style="animation: fadeInUp 0.8s ease;">
+                    <div class="post-header">
+                        <h2>${title}</h2>
+                        <span class="post-date">📅 ${date}</span>
+                    </div>
+                    <p>${content}</p>
+                    ${gifHtml}
+                    <div class="post-actions">
+                        <button class="expand-btn" onclick="toggleComments(this)">💬 Comments</button>
+                        <button class="delete-btn" onclick="deletePost(this)">🗑️ Delete</button>
+                    </div>
+                    <div class="comments-section">
+                        <input type="text" class="comment-input" placeholder="Add a comment...">
+                        <button onclick="addComment(this)" style="padding: 10px 20px; background: var(--secondary-color); border: 2px solid #fff; color: #000; font-weight: 900; cursor: pointer; margin-top: 10px;">Post Comment</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('blogPosts').insertAdjacentHTML('afterbegin', postHtml);
+        }
+
+        function deletePost(btn) {
+            if (confirm('Delete this post?')) {
+                btn.closest('.blog-post').remove();
+                saveToStorage();
+            }
+        }
+
+        function toggleComments(btn) {
+            const post = btn.closest('.blog-post');
+            const comments = post.querySelector('.comments-section');
+            comments.classList.toggle('active');
+            btn.textContent = comments.classList.contains('active') ? '💬 Hide Comments' : '💬 Comments';
+        }
+
+        function addComment(btn) {
+            const input = btn.previousElementSibling;
+            const text = input.value.trim();
+            if (!text) return;
+            
+            const comment = document.createElement('div');
+            comment.className = 'comment';
+            comment.innerHTML = `<strong style="color: var(--accent-color);">You:</strong> ${text}`;
+            
+            btn.parentElement.insertBefore(comment, input);
+            input.value = '';
+        }
+
+        function applyCustomization() {
+            document.getElementById('siteTitle').textContent = document.getElementById('customTitle').value;
+            document.getElementById('siteTagline').textContent = document.getElementById('customTagline').value;
+            document.getElementById('aboutMe').textContent = document.getElementById('customAbout').value;
+            document.getElementById('marqueeText').textContent = document.getElementById('customMarquee').value;
+            
+            document.documentElement.style.setProperty('--primary-color', document.getElementById('primaryColor').value);
+            document.documentElement.style.setProperty('--secondary-color', document.getElementById('secondaryColor').value);
+            document.documentElement.style.setProperty('--accent-color', document.getElementById('accentColor').value);
+            document.documentElement.style.setProperty('--bg-color', document.getElementById('bgColor').value);
+            document.documentElement.style.setProperty('--border-color', document.getElementById('primaryColor').value);
+            
+            const bgUrl = document.getElementById('bgImageUrl').value.trim();
+            document.getElementById('customBg').style.backgroundImage = bgUrl ? `url(${bgUrl})` : 'none';
+            
+            const picUrl = document.getElementById('profilePicUrl').value.trim();
+            if (picUrl) document.getElementById('profilePic').src = picUrl;
+            
+            document.body.style.fontFamily = document.getElementById('fontStyle').value;
+            
+            createFallingObjects();
+            closeModal('customizeModal');
+            saveToStorage();
+        }
+
+        let currentAudio = null;
+        
+        function playMusic() {
+            const url = document.getElementById('musicUrl').value.trim();
+            if (!url) {
+                alert('Paste a music URL!');
+                return;
+            }
+            document.getElementById('nowPlaying').textContent = '🎵 Playing: ' + url.substring(0, 50) + '...';
+        }
+        
+        function stopMusic() {
+            document.getElementById('nowPlaying').textContent = 'No music playing';
+            document.getElementById('musicUrl').value = '';
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        // Load saved data on start
+        window.addEventListener('load', () => {
+            loadFromStorage();
+        });
+    </script>
+</body>
+</html>
